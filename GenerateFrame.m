@@ -17,7 +17,7 @@ function [ Frame_data ] = GenerateFrame( Num_Cell_y,Num_Cell_x,Total_time,SNR_dB
             for t=1:Total_time
                 Frame_data(:,:,t)=Noise_data(:,:,t);  %产生数据平面 （Frame_data有时间维度，而Noise_data是把37个时刻的噪声平面保存在一个二位数组内）
                 
-            end       
+            end
 %           %% ----高斯分布噪声平面---- %%%
 %             I_noise=Sigma_noise*randn(numY,numX,Total_time);
 %             Q_noise=Sigma_noise*randn(numY,numX,Total_time);

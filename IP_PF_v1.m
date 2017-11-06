@@ -142,7 +142,8 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     for i=1:Target_number% 1%
                         for j=1:Np % 6%                  
                             %% === Rao-blackwellisation 
-                            Pre_T_particle(1:6,t,i,j)= sample_RB( Pre_T_particle(1:6,t-1,i,j),T_step,Q_l,Q_n,Q_ln,A_1_t,Q_1_l,q1 ); %产生新粒子  Pre_T_particle(1:6,t-1,i,j)是上一个时刻的粒子
+                            %Pre_T_particle(1:6,t,i,j)= sample_RB( Pre_T_particle(1:6,t-1,i,j),T_step,Q_l,Q_n,Q_ln,A_1_t,Q_1_l,q1 ); %产生新粒子  Pre_T_particle(1:6,t-1,i,j)是上一个时刻的粒子
+                            Pre_T_particle(1:6,t,i,j)= sample_KP(Pre_T_particle(1:6,t-1,i,j),F,Q); %纯粹的粒子滤波
                             %%       %Pre_T_particle(1:6,t,i,j)表示t时刻第i个目标第j个粒子的6个信息
                             Pre_T_life_index(i,j)=Pre_T_life_index(i,j)+1; 
                             Z_x_index=ceil(Pre_T_particle(1,t,i,j));
