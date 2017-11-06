@@ -5,7 +5,7 @@ clc;
 format long; 
 
 %% ======The initialization of the basic parameters=====
-colorParticle={'b.','y.','g.','k.';'g^','k^','b^','y^';'bo','ro','mo','go'};
+colorParticle={'bo-','r+:','g*-.','k.';'g^','k^','b^','y^';'bo-','ro','mo','go'};
 Num_Cell_x=50;
 Num_Cell_y=50;
 
@@ -110,7 +110,7 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     index_x=initx(1,1:Target_number); %
                     index_y=initx(3,1:Target_number); %
                     index_vx=initx(2,1:Target_number); %
-                    index_vy=initx(4,1:Target_number);   %initx保存了11个目标的初始状态
+                    index_vy=initx(4,1:Target_number);   %initx保存了各个目标的初始状态
                     % -------generate the new partitions of particles
                     %--------generate position based the detection measurements
                     position_x_p=repmat(index_x,Np,1)+delta_p*randn(Np,Num_n_target);
@@ -193,7 +193,7 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                 %% ------------ time recording ----------
                 single_run_time(t,MC_i,SNR_i,Np_i)=toc(singerun_start);%
 
-%                 keyboard;
+%                keyboard;
             end
             %% record the estimates
             E_target_state=zeros(7,Total_time,Target_number);

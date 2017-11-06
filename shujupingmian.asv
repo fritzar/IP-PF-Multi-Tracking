@@ -60,7 +60,7 @@ y_dis = ceil(x(3,:,:)/Re_y)*Re_y;
 
 %% ---------- MC parameters            
 repeati = 50;
-SNR_T = [12];
+SNR_T = [];
 SNR_num = length(SNR_T);  %length()函数，求数组的长度
 
 % NpT = 2.^[6,8,9,10];
@@ -82,8 +82,9 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
         Frame_data = GenerateFrame(Num_Cell_y,Num_Cell_x,Total_time,SNR_dB,Sigma_noise,x,x_dis,y_dis,Target_number);
     end    
 end
+
 figure(2)
 px=1:50;
 py=1:50;
 [X,Y]=meshgrid(px,py);
-surf(X,Y,Frame_data(px,py,15));
+surf(X,Y,Frame_data(px,py,15));%第15帧平面

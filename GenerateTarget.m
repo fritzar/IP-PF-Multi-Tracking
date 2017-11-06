@@ -1,6 +1,6 @@
 function [initx,x] = GenerateTarget(Target_number,velocity_init,Num_Cell_x,Num_Cell_y,Total_time_data,F,Q)
 %生成目标
-colorParticle={'b.','y.','g.','k.';'g^','k^','b^','y^';'bo-','ro','mo','go'};
+colorParticle={'bo-','r+:','g*-.','k.';'g^','k^','b^','y^';'bo-','ro','mo','go'};
 initx=zeros(4,Target_number); %x=[x,x',y,y']T
 x = zeros(4,Target_number,Total_time_data); %每Total_time_data个列存放一个目标的各帧状态
 x_c = zeros(3*Target_number,Total_time_data); %why 3?
@@ -49,4 +49,6 @@ end
 hold off
 axis([0,50,0,50])
 title('三目标轨迹')
+grid on
+legend ('Target1','Target2(moving from right to left)','Target3')
 
