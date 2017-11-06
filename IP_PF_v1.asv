@@ -60,7 +60,7 @@ x_dis = ceil(x(1,:,:)/Re_x)*Re_x; %能分辨的目标位置， ceil朝正无穷方向取整
 y_dis = ceil(x(3,:,:)/Re_y)*Re_y;
 
 %% ---------- MC parameters            
-repeati = 30;
+repeati = 37;
 SNR_T = [6,9,12];
 SNR_num = length(SNR_T);  %length()函数，求数组的长度
 

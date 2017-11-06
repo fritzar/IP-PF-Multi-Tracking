@@ -47,6 +47,6 @@ for n = 1:Target_number
     plot(squeeze(x(1,n,:)),squeeze(x(3,n,:)),colorParticle{1,n},'Linewidth',2)
 end
 hold off
-axis([0,50,0,50])
+axis([0,30,0,30])
 title('ÈýÄ¿±ê¹ì¼£')
 
