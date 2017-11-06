@@ -5,7 +5,7 @@ clc;
 format long; 
 
 %% ======The initialization of the basic parameters=====
-colorParticle={'bo-','r+:','g*-.','k.';'g^','k^','b^','y^';'bo-','ro','mo','go'};
+colorParticle={'bo-.','r+-.','k*-.','g>';'g^','k^','b^','y^';'bo-','ro','mo','go'};
 Num_Cell_x=50;
 Num_Cell_y=50;
 
@@ -61,7 +61,7 @@ y_dis = ceil(x(3,:,:)/Re_y)*Re_y;
 
 %% ---------- MC parameters            
 repeati = 30;
-SNR_T = [6,9,12];
+SNR_T = [9];
 SNR_num = length(SNR_T);  %length()函数，求数组的长度
 
 % NpT = 2.^[6,8,9,10];
@@ -78,6 +78,7 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
     for SNR_i=1:SNR_num  %进行SNR_num次不同信噪比的粒子滤波
         %根据SNR加上目标幅度，得到每一帧观测值
         SNR_dB=SNR_T(SNR_i);  %每次的信噪比
+        Signal_amplitude=(10.^(SNR_dB./10)).^0.5;
         Frame_data = zeros(Num_Cell_y,Num_Cell_x,Total_time);
         Sigma_noise = 1;
         Frame_data = GenerateFrame(Num_Cell_y,Num_Cell_x,Total_time,SNR_dB,Sigma_noise,x,x_dis,y_dis,Target_number);
@@ -126,17 +127,17 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     Pre_T_life_quality=ones(Num_n_target,Np);
                     for i=1:Np
                         Pre_T_particle(1:6,t,:,i)=[position_x_p(i,:);velocity_x_p(i,:);velocity_p_kk1(i,1:Num_n_target);position_y_p(i,:);velocity_y_p(i,:);velocity_p_kk1(i,1:Num_n_target)];
-                    end   %保存粒子的各种信息，位置，速度，第三个是速度衰减？
+                    end   %保存粒子的各种信息，位置，速度，速度波动
                     Pre_T_particle(7,t,:,:)=1;
 
-                    particle_likehood_after_baise=ones(Target_number,Np);   %初始权值都为1？
+                    particle_likehood_after_bias=ones(Target_number,Np);   %初始权值都为1
                 else
 
                     %% --------------- evolution of the pre-tracks ----------------
                     %% -----------independent partition particle filter------------
                     Pre_track_Z=zeros(Target_number,Np);
                     Partition_likehood=zeros(Target_number,Np);
-                    particle_likehood_after_baise=zeros(Target_number,Np);
+                    particle_likehood_after_bias=zeros(Target_number,Np);
 
                     for i=1:Target_number% 1%
                         for j=1:Np % 6%                  
@@ -151,20 +152,20 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                                 Pre_T_life_quality(i,j)=Pre_T_life_quality(i,j)+Detection_frame(Z_y_index,Z_x_index);
                                 Pre_T_particle(7,t,i,j)=Detection_frame(Z_y_index,Z_x_index);
                                 %% Gaussian likelihood ratio
-                                %Partition_likehood(i,j)=exp(0.5*(2*Detection_frame(Z_y_index,Z_x_index)*Signal_amptitude-Signal_amptitude^2));
+                                %Partition_likehood(i,j)=exp(0.5*(2*Detection_frame(Z_y_index,Z_x_index)*Signal_amplitude-Signal_amplitude^2));
                                 %% Rayleigh likelihood ratio or just likelihood
-                                Partition_likehood(i,j)=raylpdf(Detection_frame(Z_y_index,Z_x_index),sqrt(Sigma_noise+Signal_amptitude^2))./raylpdf(Detection_frame(Z_y_index,Z_x_index),Sigma_noise);
+                                Partition_likehood(i,j)=raylpdf(Detection_frame(Z_y_index,Z_x_index),sqrt(Sigma_noise+Signal_amplitude^2))./raylpdf(Detection_frame(Z_y_index,Z_x_index),Sigma_noise);
                             else
                                 Partition_likehood(i,j)=0;
                             end
                         end
                         Partition_likehood(i,:)=Partition_likehood(i,:)./sum(Partition_likehood(i,:));  %归一化
                         %% === sample index funciton
-                        [index_sample]=Sample_index(Partition_likehood(i,:));   %重采样选择的粒子的编号  这里不是重采样？
+                        [index_sample]=Sample_index(Partition_likehood(i,:));   %重采样选择的粒子的编号  
                         Pre_T_particle(:,:,i,:)=Pre_T_particle(:,:,i,index_sample);   %复制所选粒子
-                        Pre_T_life_quality(i,:)=Pre_T_life_quality(i,index_sample);   %保存对应的权值？
-                        %% === retain the bias of sample: the likehood 
-                        particle_likehood_after_baise(i,:)=Partition_likehood(i,index_sample);
+                        Pre_T_life_quality(i,:)=Pre_T_life_quality(i,index_sample);   %保存对应的权值
+                        %% === retain the bias of sample: 保存观测信息用于优化重要性密度函数 
+                        particle_likehood_after_bias(i,:)=Partition_likehood(i,index_sample); 
                     end       
                 end
 
@@ -173,13 +174,13 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                 for pre_Np_i=1:Np
                     %% ----sensor model: likelihood calculation                    
                     position_in=ceil(squeeze(Pre_T_particle([1,4],t,:,pre_Np_i)));
-                    [ Pre_w_likehood_all(pre_Np_i,t)] = likelihood_calc( Detection_frame,position_in,Signal_amptitude);
+                    [ Pre_w_likehood_all(pre_Np_i,t)] = likelihood_calc( Detection_frame,position_in,Signal_amplitude);
                     %% -----Independent PF weights biase          
-                    Pre_track_bias(pre_Np_i,t)=prod(particle_likehood_after_baise(:,pre_Np_i));
+                    Pre_track_bias(pre_Np_i,t)=prod(particle_likehood_after_bias(:,pre_Np_i));
                     %% ------calculate the weights
                     Pre_weight0(pre_Np_i,t)= Pre_w_likehood_all(pre_Np_i,t)/Pre_track_bias(pre_Np_i,t);   
                 end
-                %% ------------- Normalize th Pre-weights -----------
+                %% ------------- Normalize the Pre-weights -----------
                 Pre_weight(:,t)=Pre_weight0(:,t)./sum(Pre_weight0(:,t));
 
                 %% ------------ Resampling of the Pre-track PF ----------
@@ -207,5 +208,18 @@ end
 
 %% =======================================================
 %% ======== measurement calculation and plot =============
+figure(2)
+hold on
+for n = 1:Target_number
+    plot(squeeze(x(1,n,:)),squeeze(x(3,n,:)),colorParticle{1,n},'Linewidth',2)
+    plot(E_target_state(1,:,n),E_target_state(4,:,n),'g:','Linewidth',4)
+end
+axis([0,50,0,50])
+grid on
+legend ('Target2','Estimation1','Target2','Estimation2','Target3','Estimation3')
+title('三目标跟踪结果')
+xlabel('x方向距离')
+ylabel('y方向距离')
+% 
 %% RMSE caculation not allowing swap
  
