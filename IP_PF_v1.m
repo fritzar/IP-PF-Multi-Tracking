@@ -61,11 +61,11 @@ y_dis = ceil(x(3,:,:)/Re_y)*Re_y;
 
 %% ---------- MC parameters            
 repeati = 30;
-SNR_T = [9];
+SNR_T = [6];
 SNR_num = length(SNR_T);  %length()函数，求数组的长度
 
 % NpT = 2.^[6,8,9,10];
-Np_T = 512;
+Np_T = 2048;
 Np_num = length(Np_T);
     
 E_target_state_MC=zeros(7,Total_time,Target_number,repeati,SNR_num,Np_num); %（7，时间，MC次数变化，SNR变化，粒子数变化）
@@ -114,8 +114,11 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     index_vy=initx(4,1:Target_number);   %initx保存了各个目标的初始状态
                     % -------generate the new partitions of particles
                     %--------generate position based the detection measurements
-                    position_x_p=repmat(index_x,Np,1)+delta_p*randn(Np,Num_n_target);
-                    position_y_p=repmat(index_y,Np,1)+delta_p*randn(Np,Num_n_target);  
+%                     position_x_p=repmat(index_x,Np,1)+delta_p*randn(Np,Num_n_target);
+%                     position_y_p=repmat(index_y,Np,1)+delta_p*randn(Np,Num_n_target);
+                    %% --------初始粒子均匀分布
+                    position_x_p = random('unif',1,50,Np,Target_number);
+                    position_y_p = random('unif',1,50,Np,Target_number);
                     %--------generate velocity based on the detections
                     velocity_x_p=repmat((index_vx),Np,1);
                     velocity_y_p=repmat((index_vy),Np,1);  %已知先验信息产生粒子
@@ -213,7 +216,7 @@ figure(2)
 hold on
 for n = 1:Target_number
     plot(squeeze(x(1,n,:)),squeeze(x(3,n,:)),colorParticle{1,n},'Linewidth',2)
-    plot(E_target_state(1,:,n),E_target_state(4,:,n),'g:','Linewidth',4)
+    plot(E_target_state(1,:,n),E_target_state(4,:,n),'g^:','Linewidth',3)
 end
 axis([0,50,0,50])
 grid on
@@ -223,4 +226,5 @@ xlabel('x方向距离')
 ylabel('y方向距离')
 % 
 %% RMSE caculation not allowing swap
+
  

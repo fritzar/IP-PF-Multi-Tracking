@@ -5,7 +5,7 @@ clc;
 format long; 
 
 %% ======The initialization of the basic parameters=====
-colorParticle={'bo-','r+:','g*-.','k>';'g^','k^','b^','y^';'bo-','ro','mo','go'};
+colorParticle={'bo-.','r+-.','k*-.','g>';'g^','k^','b^','y^';'bo-','ro','mo','go'};
 Num_Cell_x=50;
 Num_Cell_y=50;
 
@@ -61,7 +61,7 @@ y_dis = ceil(x(3,:,:)/Re_y)*Re_y;
 
 %% ---------- MC parameters            
 repeati = 30;
-SNR_T = [9];
+SNR_T = [6];
 SNR_num = length(SNR_T);  %length()函数，求数组的长度
 
 % NpT = 2.^[6,8,9,10];
@@ -115,7 +115,10 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     % -------generate the new partitions of particles
                     %--------generate position based the detection measurements
                     position_x_p=repmat(index_x,Np,1)+delta_p*randn(Np,Num_n_target);
-                    position_y_p=repmat(index_y,Np,1)+delta_p*randn(Np,Num_n_target);  
+                    position_y_p=repmat(index_y,Np,1)+delta_p*randn(Np,Num_n_target);
+                    %% --------初始粒子均匀分布
+                    position_x_p = random('unif',1,10,Np,Target_number);
+                    position_y_p = random('unif',1,10,Np,Target_number);
                     %--------generate velocity based on the detections
                     velocity_x_p=repmat((index_vx),Np,1);
                     velocity_y_p=repmat((index_vy),Np,1);  %已知先验信息产生粒子
@@ -142,7 +145,8 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     for i=1:Target_number% 1%
                         for j=1:Np % 6%                  
                             %% === Rao-blackwellisation 
-                            Pre_T_particle(1:6,t,i,j)= sample_RB( Pre_T_particle(1:6,t-1,i,j),T_step,Q_l,Q_n,Q_ln,A_1_t,Q_1_l,q1 ); %产生新粒子  Pre_T_particle(1:6,t-1,i,j)是上一个时刻的粒子
+                            %Pre_T_particle(1:6,t,i,j)= sample_RB( Pre_T_particle(1:6,t-1,i,j),T_step,Q_l,Q_n,Q_ln,A_1_t,Q_1_l,q1 ); %产生新粒子  Pre_T_particle(1:6,t-1,i,j)是上一个时刻的粒子
+                            Pre_T_particle(1:6,t,i,j)= sample_KP(Pre_T_particle(1:6,t-1,i,j),F,Q); %纯粹的粒子滤波
                             %%       %Pre_T_particle(1:6,t,i,j)表示t时刻第i个目标第j个粒子的6个信息
                             Pre_T_life_index(i,j)=Pre_T_life_index(i,j)+1; 
                             Z_x_index=ceil(Pre_T_particle(1,t,i,j));
@@ -212,15 +216,15 @@ figure(2)
 hold on
 for n = 1:Target_number
     plot(squeeze(x(1,n,:)),squeeze(x(3,n,:)),colorParticle{1,n},'Linewidth',2)
-    plot(E_target_state(1,:,n),E_target_state(4,:,n),'k')
+    plot(E_target_state(1,:,n),E_target_state(4,:,n),'g^:','Linewidth',3)
 end
 axis([0,50,0,50])
 grid on
 legend ('Target2','Estimation1','Target2','Estimation2','Target3','Estimation3')
-plot(x(1,:),x(3,:),'ko-')
 title('三目标跟踪结果')
 xlabel('x方向距离')
 ylabel('y方向距离')
 % 
 %% RMSE caculation not allowing swap
+
  
