@@ -25,8 +25,8 @@ Re_y = 1;
 
 
 %% ---------- initial distribution of target state 
-delta_p=20;  % the stardard deviation of the inital distribution of position
-delta_v=5;   % the stardard deviation of the inital distribution of velocity
+delta_p=10;  % the stardard deviation of the inital distribution of position
+delta_v=0.01;   % the stardard deviation of the inital distribution of velocity
 new_velocity_Variance=delta_v^2;             % standard deviation 0.1;
 % q2=2;                  % q2 the measurement noise
           
@@ -60,12 +60,12 @@ x_dis = ceil(x(1,:,:)/Re_x)*Re_x; %能分辨的目标位置， ceil朝正无穷方向取整
 y_dis = ceil(x(3,:,:)/Re_y)*Re_y;
 
 %% ---------- MC parameters            
-repeati = 30;
+repeati = 10;
 SNR_T = [6];
 SNR_num = length(SNR_T);  %length()函数，求数组的长度
 
 % NpT = 2.^[6,8,9,10];
-Np_T = 500;
+Np_T = 1000;
 Np_num = length(Np_T);
     
 E_target_state_MC=zeros(7,Total_time,Target_number,repeati,SNR_num,Np_num); %（7，时间，MC次数变化，SNR变化，粒子数变化）
@@ -149,8 +149,8 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     for i=1:Target_number% 1）For each partition
                         for j=1:Np % 6%                  
                             %% === Rao-blackwellisation 
-                            %Pre_T_particle(1:6,t,i,j)= sample_RB( Pre_T_particle(1:6,t-1,i,j),T_step,Q_l,Q_n,Q_ln,A_1_t,Q_1_l,q1 ); %产生新粒子  Pre_T_particle(1:6,t-1,i,j)是上一个时刻的粒子
-                            Pre_T_particle(1:6,t,i,j)= sample_KP(Pre_T_particle(1:6,t-1,i,j),F,Q); %纯粹的粒子滤波
+                            Pre_T_particle(1:6,t,i,j)= sample_RB( Pre_T_particle(1:6,t-1,i,j),T_step,Q_l,Q_n,Q_ln,A_1_t,Q_1_l,q1 ); %产生新粒子  Pre_T_particle(1:6,t-1,i,j)是上一个时刻的粒子
+                            %Pre_T_particle(1:6,t,i,j)= sample_KP(Pre_T_particle(1:6,t-1,i,j),F,Q); %纯粹的粒子滤波
                             %%       %Pre_T_particle(1:6,t,i,j)表示t时刻第i个目标第j个粒子的6个信息
                             Pre_T_life_index(i,j)=Pre_T_life_index(i,j)+1; 
                             Z_x_index=ceil(Pre_T_particle(1,t,i,j));
@@ -214,7 +214,7 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
         
         for t_i= 1:Target_number
             Target_p_error(:,:,t_i,SNR_i,Np_i) = (squeeze(E_target_state_MC(1,:,t_i,:,SNR_i,Np_i))-repmat(x(1,((t_i-1)*Total_time+1):(t_i*Total_time)),repeati,1)').^2 + (squeeze(E_target_state_MC(4,:,t_i,:,SNR_i,Np_i))-repmat(x(1,((t_i-1)*Total_time+1):(t_i*Total_time)),repeati,1)').^2; %注意对真实目标的矩阵有转置！T*Monte
-            error_P(:,t_i,SNR_i,Np_i) = sqrt(mean(Target_p_error(:,:,t_i,SNR_i,Np_i),2)); %%T，各帧的RMSE
+            error_P(:,t_i,SNR_i,Np_i) = squeeze(sqrt(mean(Target_p_error(:,:,t_i,SNR_i,Np_i),2))); %%T，各帧的RMSE
         end
     end      
 end
