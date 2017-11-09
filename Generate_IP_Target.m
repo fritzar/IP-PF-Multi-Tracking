@@ -22,11 +22,11 @@ Sigma_noise=1; %sigma_noise
 % initx([1,3],:) = i_p(:,1:Target_number);
 % initx([2,4],:) = i_v(:,1:Target_number);
 
-initx([1,3],1)  = [10;10];
-initx([1,3],2) = [42.5,25];
-initx([1,3],3) = [15;30];
+initx([1,3],1)  = [40;40];
+initx([1,3],2) = [5,15];
+initx([1,3],3) = [15;5];
 
-initx([2,4],:) = [1,1;-1,0;1,-1]';
+initx([2,4],:) = [-1,-1;0.8,1.1;1.1,0.75]';
 
 
 
@@ -50,5 +50,5 @@ hold off
 axis([0,50,0,50])
 title('ÈýÄ¿±ê¹ì¼£')
 grid on
-legend ('Target1','Target2(moving from right to left)','Target3')
+legend ('Target1','Target2','Target3')
 

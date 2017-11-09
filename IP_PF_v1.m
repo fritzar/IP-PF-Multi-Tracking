@@ -9,9 +9,9 @@ colorParticle={'bo-.','r+-.','k*-.','g>';'g^','k^','b^','y^';'bo-','ro','mo','go
 Num_Cell_x=50;
 Num_Cell_y=50;
 
-Total_time=30;     % the number of total integrated frames
-Total_time_data=30;
-Time_point=30;
+Total_time=20;     % the number of total integrated frames
+Total_time_data=20;
+Time_point=20;
 T_step=1;          % The size of the time cell:Time_step
 
 q1=0.001;          % q1,q2 the level of process noise in target motion
@@ -53,7 +53,7 @@ Q_1_l=Q_l-(Q_ln.')*(inv(Q_n))*Q_ln;
 Target_number=3;                        
 
 velocity_init = 1; %
-[initx,x] = GenerateTarget(Target_number,velocity_init,Num_Cell_x,Num_Cell_y,Total_time,F,Q);
+%[initx,x] = GenerateTarget(Target_number,velocity_init,Num_Cell_x,Num_Cell_y,Total_time,F,Q);
 [initx,x] = Generate_IP_Target(Target_number,velocity_init,Num_Cell_x,Num_Cell_y,Total_time,F,Q);
 
 x_dis = ceil(x(1,:,:)/Re_x)*Re_x; %能分辨的目标位置， ceil朝正无穷方向取整
