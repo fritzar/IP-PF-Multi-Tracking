@@ -133,16 +133,16 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     end   %保存粒子的各种信息，位置，速度，速度波动
                     Pre_T_particle(7,t,:,:)=1;
 
-                    particle_likehood_after_bias=ones(Target_number,Np);   %初始权值都为1
+                    particle_likehood_bias=ones(Target_number,Np);   %初始权值都为1
                 else
 
                     %% --------------- evolution of the pre-tracks ----------------
                     %% -----------independent partition particle filter------------
                     Pre_track_Z=zeros(Target_number,Np);
                     Partition_likehood=zeros(Target_number,Np);
-                    particle_likehood_after_bias=zeros(Target_number,Np);
+                    particle_likehood_bias=zeros(Target_number,Np);
 
-                    for i=1:Target_number% 1%
+                    for i=1:Target_number% 1）For each partition
                         for j=1:Np % 6%                  
                             %% === Rao-blackwellisation 
                             %Pre_T_particle(1:6,t,i,j)= sample_RB( Pre_T_particle(1:6,t-1,i,j),T_step,Q_l,Q_n,Q_ln,A_1_t,Q_1_l,q1 ); %产生新粒子  Pre_T_particle(1:6,t-1,i,j)是上一个时刻的粒子
@@ -169,7 +169,7 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                         Pre_T_particle(:,:,i,:)=Pre_T_particle(:,:,i,index_sample);   %复制所选粒子
                         Pre_T_life_quality(i,:)=Pre_T_life_quality(i,index_sample);   %保存对应的权值
                         %% === retain the bias of sample: 保存观测信息用于优化重要性密度函数 
-                        particle_likehood_after_bias(i,:)=Partition_likehood(i,index_sample); 
+                        particle_likehood_bias(i,:)=Partition_likehood(i,index_sample); 
                     end       
                 end
 
@@ -180,7 +180,7 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     position_in=ceil(squeeze(Pre_T_particle([1,4],t,:,pre_Np_i)));
                     [ Pre_w_likehood_all(pre_Np_i,t)] = likelihood_calc( Detection_frame,position_in,Signal_amplitude);
                     %% -----Independent PF weights biase          
-                    Pre_track_bias(pre_Np_i,t)=prod(particle_likehood_after_bias(:,pre_Np_i));
+                    Pre_track_bias(pre_Np_i,t)=prod(particle_likehood_bias(:,pre_Np_i));
                     %% ------calculate the weights
                     Pre_weight0(pre_Np_i,t)= Pre_w_likehood_all(pre_Np_i,t)/Pre_track_bias(pre_Np_i,t);   
                 end
