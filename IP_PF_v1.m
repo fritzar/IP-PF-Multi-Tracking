@@ -15,7 +15,6 @@ Time_point=30;
 T_step=1;          % The size of the time cell:Time_step
 
 q1=0.001;          % q1,q2 the level of process noise in target motion
-q1_1=0.01;
 
 Re_x = 1; %Resolution of x-axis
 Re_y = 1;
@@ -26,8 +25,8 @@ Re_y = 1;
 
 
 %% ---------- initial distribution of target state 
-delta_p=0.05;  % the stardard deviation of the inital distribution of position
-delta_v=0.01;   % the stardard deviation of the inital distribution of velocity
+delta_p=20;  % the stardard deviation of the inital distribution of position
+delta_v=5;   % the stardard deviation of the inital distribution of velocity
 new_velocity_Variance=delta_v^2;             % standard deviation 0.1;
 % q2=2;                  % q2 the measurement noise
           
@@ -55,6 +54,7 @@ Target_number=3;
 
 velocity_init = 1; %
 [initx,x] = GenerateTarget(Target_number,velocity_init,Num_Cell_x,Num_Cell_y,Total_time,F,Q);
+[initx,x] = Generate_IP_Target(Target_number,velocity_init,Num_Cell_x,Num_Cell_y,Total_time,F,Q);
 
 x_dis = ceil(x(1,:,:)/Re_x)*Re_x; %能分辨的目标位置， ceil朝正无穷方向取整
 y_dis = ceil(x(3,:,:)/Re_y)*Re_y;
@@ -65,7 +65,7 @@ SNR_T = [6];
 SNR_num = length(SNR_T);  %length()函数，求数组的长度
 
 % NpT = 2.^[6,8,9,10];
-Np_T = 1000;
+Np_T = 500;
 Np_num = length(Np_T);
     
 E_target_state_MC=zeros(7,Total_time,Target_number,repeati,SNR_num,Np_num); %（7，时间，MC次数变化，SNR变化，粒子数变化）
@@ -229,7 +229,7 @@ for n = 1:Target_number
 end
 axis([0,50,0,50])
 grid on
-legend ('Target2','Estimation1','Target2','Estimation2','Target3','Estimation3')
+legend ('Target1','Estimation1','Target2','Estimation2','Target3','Estimation3')
 title('三目标跟踪结果')
 xlabel('x方向距离')
 ylabel('y方向距离')
@@ -237,18 +237,19 @@ ylabel('y方向距离')
 %% RMSE caculation not allowing swap
 figure(60)
 hold on;
-plot(error_P(:,1,1,1),'r^-');
-plot(error_P(:,2,1,1),'b^-');
+plot(error_P(:,1,1,1),'b^-');
+plot(error_P(:,2,1,1),'r^-');
 plot(error_P(:,3,1,1),'k^-');
 title('三个目标的各帧均方误差')
 % axis([0,Total_time,0,1])
 xlabel('时间/帧')
 ylabel('均方误差')
+legend('Target1','Target2','Target3')
 grid on
 hold off
 
 RMS_t = zeros(Target_number);
-RMS_t(:) = mean(error_P(:,1,1,1))
+RMS_t(:) = mean(error_P(:,1,1,1),1)
 
 
  
