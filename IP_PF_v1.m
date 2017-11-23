@@ -120,7 +120,7 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     %--------generate position based the detection measurements
                     position_x_p=repmat(index_x,Np,1)+delta_p*randn(Np,Num_n_target);
                     position_y_p=repmat(index_y,Np,1)+delta_p*randn(Np,Num_n_target);
-                    %% --------初始粒子均匀分布
+                    %% --------初始化：初始粒子均匀分布
 %                     position_x_p = random('unif',1,50,Np,Target_number);
 %                     position_y_p = random('unif',1,50,Np,Target_number);
                     %--------generate velocity based on the detections
