@@ -118,24 +118,12 @@ for Np_i=1:Np_num%Np_num%3%  %表示进行Np_num次不同粒子数的粒子滤波
                     index_vy=initx(4,1:Target_number);   %initx保存了各个目标的初始状态
                     % -------generate the new partitions of particles
                     %--------generate position based the detection measurements
-<<<<<<< HEAD
-%                     position_x_p=repmat(index_x,Np,1)+delta_p*randn(Np,Num_n_target);
-%                     position_y_p=repmat(index_y,Np,1)+delta_p*randn(Np,Num_n_target);
-                    %% --------初始粒子均匀分布
-                    position_x_p(:,1)= random('unif',30,50,Np,1);
-                    position_y_p(:,1)= random('unif',30,50,Np,1);
-                    position_x_p(:,2)= random('unif',1,20,Np,1);
-                    position_y_p(:,2)= random('unif',1,20,Np,1);
-                    position_x_p(:,3)= random('unif',1,20,Np,1);
-                    position_y_p(:,3)= random('unif',1,20,Np,1);
-=======
                     position_x_p=repmat(index_x,Np,1)+delta_p*randn(Np,Num_n_target);
                     position_y_p=repmat(index_y,Np,1)+delta_p*randn(Np,Num_n_target);
-                    %% --------初始化：初始粒子均匀分布
-%                     position_x_p = random('unif',1,50,Np,Target_number);
-%                     position_y_p = random('unif',1,50,Np,Target_number);
->>>>>>> 97f796bafbba355889aaa00a462b36af9e9afcfa
-                    %--------generate velocity based on the detections
+%% --------初始化：初始粒子均匀分布
+%                 position_x_p = random('unif',1,50,Np,Target_number);
+%                 position_y_p = random('unif',1,50,Np,Target_number);
+%--------generate velocity based on the detections
                     velocity_x_p=repmat((index_vx),Np,1);
                     velocity_y_p=repmat((index_vy),Np,1);  %已知先验信息产生粒子
                     %--------generate velocity variance
